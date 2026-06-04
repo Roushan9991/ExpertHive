@@ -14,6 +14,7 @@ import { ResetPassword } from './pages/auth/ResetPassword';
 import { UserDashboard } from './pages/dashboard/UserDashboard';
 import { AdminDashboard } from './pages/dashboard/AdminDashboard';
 import { Profile } from './pages/dashboard/Profile';
+import { DataInsights } from './pages/DataInsights';
 import { Toaster } from 'react-hot-toast';
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
             <Route path="/experts" element={<FindExperts />} />
             <Route path="/experts/:expertId" element={<ExpertProfile />} />
             <Route path="/apply-expert" element={<ApplyExpert />} />
+            <Route path="/data-insights" element={<DataInsights />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />

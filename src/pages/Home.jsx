@@ -143,7 +143,7 @@ export const Home = () => {
   return (
     <main className="flex-grow bg-slate-50 overflow-x-hidden pt-16">
       {/* 1. Hero Section */}
-      <section className="relative bg-gradient-to-b from-[#012d1d] via-[#021f14] to-[#043322] text-white py-12 md:py-24 lg:py-32 overflow-hidden">
+      <section className="relative bg-gradient-to-b from-[#012d1d] via-[#021f14] to-[#043322] text-white pt-8 pb-16 md:pt-12 md:pb-24 lg:pt-14 lg:pb-28 overflow-hidden">
         {/* Abstract Glowing Grid Background */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#0f3a2c_1px,transparent_1px),linear-gradient(to_bottom,#0f3a2c_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-35" />
         
@@ -163,10 +163,23 @@ export const Home = () => {
             >
               <motion.div 
                 variants={fadeIn}
-                className="inline-flex items-center gap-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-4 py-2 text-xs sm:text-sm font-semibold text-emerald-300 backdrop-blur-md shadow-inner"
+                className="flex flex-wrap gap-3 w-full"
               >
-                <Sparkles className="h-3.5 w-3.5 text-emerald-400 animate-pulse" />
-                <span>Bridging class learning with real-world Agribusiness</span>
+                <div className="inline-flex items-center gap-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-4 py-2 text-xs sm:text-sm font-semibold text-emerald-300 backdrop-blur-md shadow-inner self-start">
+                  <Sparkles className="h-3.5 w-3.5 text-emerald-400 animate-pulse" />
+                  <span>Bridging class learning with real-world Agribusiness</span>
+                </div>
+                <Link 
+                  to="/data-insights"
+                  className="inline-flex items-center gap-2 rounded-full bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/30 px-4 py-2 text-xs sm:text-sm font-bold text-amber-200 backdrop-blur-md shadow-lg transition-all duration-300 hover:-translate-y-0.5 self-start cursor-pointer group"
+                >
+                  <span className="flex h-2 w-2 relative">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+                  </span>
+                  <span>Free Crop Data Insights Dashboard</span>
+                  <ArrowRight className="h-3.5 w-3.5 text-amber-300 group-hover:translate-x-0.5 transition-transform" />
+                </Link>
               </motion.div>
 
               <motion.h1 
@@ -238,7 +251,7 @@ export const Home = () => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, ease: 'easeOut', delay: 0.15 }}
-              className="relative flex items-center justify-center"
+              className="relative flex flex-col items-center justify-center gap-4"
             >
               <div className="w-full max-w-[500px] lg:max-w-none rounded-[2.5rem] p-3 bg-gradient-to-br from-white/10 to-white/0 border border-white/15 backdrop-blur-md shadow-2xl shadow-[#011a11]/80 overflow-hidden">
                 <AgriVisualizer />
@@ -263,6 +276,9 @@ export const Home = () => {
                   </div>
                 </div>
               </div>
+              <p className="text-center font-bold text-emerald-300 text-sm sm:text-base tracking-wide uppercase mt-1">
+                ExpertHive wide network of AgriExperts
+              </p>
             </motion.div>
 
           </div>

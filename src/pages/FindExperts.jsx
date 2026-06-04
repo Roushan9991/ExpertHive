@@ -166,10 +166,16 @@ export const FindExperts = () => {
         zoomLink
       };
       
-      await saveBooking(booking);
-      setBookingDetails(null);
-      toast.success('Consultation successfully booked!', { id: 'booking-flow' });
-      navigate('/dashboard');
+      try {
+        await saveBooking(booking);
+        setBookingDetails(null);
+        toast.success('Consultation successfully booked!', { id: 'booking-flow' });
+        navigate('/dashboard');
+      } catch (dbErr) {
+        console.error('Database save failed:', dbErr);
+        toast.error('Booking payment succeeded, but failed to save booking to dashboard. Please contact support.', { id: 'booking-flow' });
+        setBookingDetails(null);
+      }
     }
   };
 

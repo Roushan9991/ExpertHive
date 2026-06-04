@@ -44,6 +44,14 @@ export const Navbar = () => {
           >
             Become an Expert
           </NavLink>
+          <NavLink
+            to="/data-insights"
+            className={({ isActive }) =>
+              `font-body-md text-sm font-semibold transition-all duration-200 py-1 ${isActive ? 'text-emerald-700 font-bold border-b-2 border-emerald-600' : 'text-slate-600 hover:text-emerald-700'}`
+            }
+          >
+            Data Insights
+          </NavLink>
           {user && (
             <NavLink
               to={user.role === 'admin' ? '/admin' : '/dashboard'}
@@ -103,6 +111,7 @@ export const Navbar = () => {
             <Link to="/" onClick={toggleMenu} className="py-3.5 border-b border-slate-100 font-semibold text-slate-700 hover:text-emerald-700 transition-colors">Home</Link>
             <Link to="/experts" onClick={toggleMenu} className="py-3.5 border-b border-slate-100 font-semibold text-slate-700 hover:text-emerald-700 transition-colors">Find Experts</Link>
             <Link to="/apply-expert" onClick={toggleMenu} className="py-3.5 border-b border-slate-100 font-semibold text-slate-700 hover:text-emerald-700 transition-colors">Become an Expert</Link>
+            <Link to="/data-insights" onClick={toggleMenu} className="py-3.5 border-b border-slate-100 font-semibold text-slate-700 hover:text-emerald-700 transition-colors">Data Insights</Link>
             {user && (
               <Link to={user.role === 'admin' ? '/admin' : '/dashboard'} onClick={toggleMenu} className="py-3.5 border-b border-slate-100 font-semibold text-slate-700 hover:text-emerald-700 transition-colors">Dashboard</Link>
             )}

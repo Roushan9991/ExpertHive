@@ -11,6 +11,8 @@ export const useAuth = () => useContext(AuthContext);
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [initialized, setInitialized] = useState(false);
+  const [authUser, setAuthUser] = useState(null);
   const userRef = React.useRef(null);
 
   useEffect(() => {
@@ -21,26 +23,7 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     let mounted = true;
-
-    const checkSession = async () => {
-      try {
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
-
-        if (!mounted) return;
-
-        if (session?.user) {
-          await fetchProfile(session.user);
-        } else {
-          setUser(null);
-          setLoading(false);
-        }
-      } catch (err) {
-        console.error(err);
-        setLoading(false);
-      }
-    };
+    let subscription = null;
 
     // OAuth error handling
     const hashParams = new URLSearchParams(
@@ -67,37 +50,85 @@ export const AuthProvider = ({ children }) => {
       );
     }
 
-    checkSession();
+    const initAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!mounted) return;
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        try {
-          if (event === 'SIGNED_OUT') {
-            setUser(null);
-            setLoading(false);
-
-            navigate('/', { replace: true });
-
-            return;
-          }
-
-          if (session?.user) {
-            await fetchProfile(session.user);
-          }
-        } catch (err) {
-          console.error(err);
+        if (session?.user) {
+          setAuthUser(session.user);
+        } else {
+          setUser(null);
           setLoading(false);
+          setInitialized(true);
+        }
+      } catch (err) {
+        console.error('getSession error:', err);
+        if (mounted) {
+          setLoading(false);
+          setInitialized(true);
         }
       }
-    );
+
+      if (mounted) {
+        const { data } = supabase.auth.onAuthStateChange(
+          (event, session) => {
+            if (!mounted) return;
+            if (event === 'SIGNED_OUT') {
+              setAuthUser(null);
+              setUser(null);
+              setLoading(false);
+              navigate('/', { replace: true });
+              return;
+            }
+
+            if (session?.user) {
+              setAuthUser(session.user);
+            } else {
+              setAuthUser(null);
+              setUser(null);
+              setLoading(false);
+              setInitialized(true);
+            }
+          }
+        );
+        subscription = data.subscription;
+      }
+    };
+
+    initAuth();
 
     return () => {
       mounted = false;
-      subscription.unsubscribe();
+      if (subscription) {
+        subscription.unsubscribe();
+      }
     };
   }, []);
+
+  useEffect(() => {
+    if (!authUser) return;
+
+    let mounted = true;
+
+    const loadProfile = async () => {
+      try {
+        await fetchProfile(authUser);
+      } catch (err) {
+        console.error('Error fetching profile:', err);
+      } finally {
+        if (mounted) {
+          setInitialized(true);
+        }
+      }
+    };
+
+    loadProfile();
+
+    return () => {
+      mounted = false;
+    };
+  }, [authUser]);
 
   const fetchProfile = async (authUser) => {
     try {
@@ -183,6 +214,7 @@ export const AuthProvider = ({ children }) => {
       setUser(null);
     } finally {
       setLoading(false);
+      setInitialized(true);
     }
   };
 
@@ -190,7 +222,7 @@ export const AuthProvider = ({ children }) => {
     email,
     password
   ) => {
-    const { error } =
+    const { data, error } =
       await supabase.auth.signInWithPassword(
         {
           email,
@@ -201,6 +233,10 @@ export const AuthProvider = ({ children }) => {
     if (error) {
       toast.error(error.message);
       return false;
+    }
+
+    if (data?.user) {
+      await fetchProfile(data.user);
     }
 
     toast.success(
@@ -217,7 +253,7 @@ export const AuthProvider = ({ children }) => {
     role = 'student',
     autoLogin = true
   ) => {
-    const { error } =
+    const { data, error } =
       await supabase.auth.signUp({
         email,
         password,
@@ -237,6 +273,8 @@ export const AuthProvider = ({ children }) => {
     if (!autoLogin) {
       await supabase.auth.signOut();
       setUser(null);
+    } else if (data?.user) {
+      await fetchProfile(data.user);
     }
 
     toast.success(
@@ -283,7 +321,7 @@ export const AuthProvider = ({ children }) => {
         fetchProfile,
       }}
     >
-      {!loading && children}
+      {initialized ? children : null}
     </AuthContext.Provider>
   );
 };
